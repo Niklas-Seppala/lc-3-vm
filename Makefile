@@ -1,5 +1,5 @@
 CC=gcc
-DEBUG=-g -DDEBUG -RT_ASSERT
+DEBUG=-g -DDEBUG -DRT_ASSERT
 WARN=-Wall -Wshadow
 STD=-std=gnu99
 HEADERS=-Iinclude
@@ -30,16 +30,6 @@ build: ${BINS}
 
 run:
 	@./out/${PROJECT_NAME}
-
-#---------------------- TEST ----------------------#
-TEST_DIR=./test/
-TEST_SRC_FILES=$(subst ${SRC_DIR}main.c, ${TEST_DIR}tests.c, ${SRC_FILES})
-
-tests ${TEST_BINS}:
-	@${CC} ${STD} ${HEADERS} ${TEST_SRC_FILES} -o ${OUT_DIR}tests
-	@./out/tests
-#--------------------------------------------------#
-
 
 clean:
 	@rm $(OBJ_DIR)* $(OUT_DIR)* *.o 2>/dev/null || true
