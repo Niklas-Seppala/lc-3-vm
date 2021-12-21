@@ -1,10 +1,10 @@
 /**
  * @file memory.h
  * @author Niklas Seppälä
- * @brief 
  * @date 2021-12-21
- * @copyright Copyright (c) 2021 MIT
+ * @copyright Copyright (c) 2021
  */
+
 
 
 #if !defined(MEMORY_H)
