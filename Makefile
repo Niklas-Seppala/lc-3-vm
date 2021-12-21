@@ -1,10 +1,11 @@
 CC=gcc
 DEBUG=-g -DDEBUG
-OFLAGS=-Wall -Wshadow -c
+WARN=-Wall -Wshadow
+STANDARD=-std=c99
 HEADERS=-Iinclude
 PROJECT_NAME=lc3vm
 
-COMPLETE_PRINT = \033[1;32mBuild Complete\033[0m
+COMPLETE_PRINT = \033[1;32mBuild Complete\033[0m\n\nBinary location: ${OUT_DIR}${PROJECT_NAME}\n----------------\n
 MODULE_PRINT = \033[0;34m$@\033[0m
 
 OBJ_DIR=./obj/
@@ -18,14 +19,14 @@ BINS := $(SRC:%.c=%)
 
 
 build: ${BINS}
-	@echo "Linking..."
+	@echo "Linking ..."
 	@${CC} ${OBJS} ${RAYLIB} -o ${OUT_DIR}${PROJECT_NAME}
 	@mv ./*.o ${OBJ_DIR}
 	@echo "$(COMPLETE_PRINT)"
 
 %.o: ${SRC_DIR}%.c
-	@echo "Compiling module $(MODULE_PRINT)"
-	@${CC} ${OFLAGS} ${HEADERS} ${DEBUG} $< -o $@
+	@echo "Module $(MODULE_PRINT)"
+	@${CC} -c ${STANDARD} ${WARN} ${HEADERS} ${DEBUG} $< -o $@
 
 %: %.o
 	

@@ -2,3 +2,6 @@ obj/*
 !obj/.gitkeep
 out/*
 !out/.gitkeep
+
+
+.vscode
