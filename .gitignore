@@ -3,5 +3,5 @@ obj/*
 out/*
 !out/.gitkeep
 
-
+**.log
 .vscode

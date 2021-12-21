@@ -1,7 +1,7 @@
 CC=gcc
 DEBUG=-g -DDEBUG
 WARN=-Wall -Wshadow
-STANDARD=-std=c99
+STANDARD=-std=gnu99
 HEADERS=-Iinclude
 PROJECT_NAME=lc3vm
 
