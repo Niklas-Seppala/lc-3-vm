@@ -6,25 +6,25 @@ static uint16_t memory[UINT16_MAX] = {0};  // Program Memory.
 static uint16_t registers[R_SIZE] = {0};   // Program Register.
 
 /*****************************************/
-/********* R/W safety assertions *********/
+/***** Runtime R/W safety assertions *****/
 /*****************************************/
-#ifdef RT_CHECKS
+#ifdef RT_ASSERT
 #include <assert.h>
-#define ILLEGAL_MEMORY_ADDRESS(addr) (addr > PC_START && addr < UINT16_MAX)
+#define ILLEGAL_MEMORY_ACCESS(addr) (addr > PC_START && addr < UINT16_MAX)
 #define ILLEGAL_REGISTER_ACCESS(reg) (reg >= R_0 && reg < R_SIZE)
 
-#define MEMORY_RW_ASSERT(addr) assert(ILLEGAL_MEMORY_ADDRESS(addr))
+#define MEMORY_RW_ASSERT(addr) assert(ILLEGAL_MEMORY_ACCESS(addr))
 #define REGISTER_RW_ASSERT(reg) assert(ILLEGAL_REGISTER_ACCESS(reg))
 #endif
 
 
 /*****************************************/
-/*********** Implementations *************/
+/************* Public API  ***************/
 /*****************************************/
 
 uint16_t rread(enum REGISTER reg)
 {
-#ifdef RT_CHECKS
+#ifdef RT_ASSERT
     REGISTER_RW_ASSERT(reg);
 #endif
     return registers[reg];
@@ -32,7 +32,7 @@ uint16_t rread(enum REGISTER reg)
 
 void rwrite(enum REGISTER reg, uint16_t val)
 {
-#ifdef RT_CHECKS
+#ifdef RT_ASSERT
     REGISTER_RW_ASSERT(reg);
 #endif
     registers[reg] = val;
@@ -40,7 +40,7 @@ void rwrite(enum REGISTER reg, uint16_t val)
 
 uint16_t mread(uint16_t address)
 {
-#ifdef RT_CHECKS
+#ifdef RT_ASSERT
     MEMORY_RW_ASSERT(address);
 #endif
 
@@ -49,7 +49,7 @@ uint16_t mread(uint16_t address)
 
 void mwrite(uint16_t address, uint16_t val)
 {
-#ifdef RT_CHECKS
+#ifdef RT_ASSERT
     MEMORY_RW_ASSERT(address);
 #endif
 

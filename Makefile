@@ -1,5 +1,5 @@
 CC=gcc
-DEBUG=-g -DDEBUG -DRT_CHECKS
+DEBUG=-g -DDEBUG -RT_ASSERT
 WARN=-Wall -Wshadow
 STD=-std=gnu99
 HEADERS=-Iinclude

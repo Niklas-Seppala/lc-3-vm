@@ -5,7 +5,7 @@
 
 int main(int argc, char const **argv)
 {
-#ifdef RT_CHECKS
+#ifdef RT_ASSERT
     printf("RUNTIME ASSERT active\n");
 #endif
 #ifdef DEBUG
