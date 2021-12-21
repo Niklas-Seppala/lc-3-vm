@@ -4,6 +4,11 @@
 static inline negative_16(uint16_t value) { return value >> 15; }
 static inline positive_16(uint16_t value) { return !(value >> 15); }
 
+
+/*****************************************/
+/****** Public API Implementations  ******/
+/*****************************************/
+
 void set_cond_flag(enum REGISTER reg)
 {
     const value = rread(reg);

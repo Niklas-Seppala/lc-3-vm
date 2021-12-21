@@ -19,7 +19,7 @@ static uint16_t registers[R_SIZE] = {0};   // Program Register.
 
 
 /*****************************************/
-/************* Public API  ***************/
+/****** Public API Implementations  ******/
 /*****************************************/
 
 uint16_t rread(enum REGISTER reg)
