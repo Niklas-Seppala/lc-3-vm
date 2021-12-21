@@ -1,18 +1,47 @@
 #include <inttypes.h>
+#include "memory.h"
 
-static uint16_t PC_START = 0x3000;
-static uint16_t memory[UINT16_MAX] = {0};
+static uint16_t PC_START = 0x3000;         // Addresses < 0x3000 reserved for later use.
+static uint16_t memory[UINT16_MAX] = {0};  // Program Memory. 
+static uint16_t registers[R_SIZE] = {0};   // Program Register.
 
-#ifdef DEBUG
+/*****************************************/
+/********* R/W safety assertions *********/
+/*****************************************/
+#ifdef RT_CHECKS
 #include <assert.h>
 #define ILLEGAL_MEMORY_ADDRESS(addr) (addr > PC_START && addr < UINT16_MAX)
-#define MEM_RW_ASSERT(addr) assert(ILLEGAL_MEMORY_ADDRESS(addr));
+#define ILLEGAL_REGISTER_ACCESS(reg) (reg >= R_0 && reg < R_SIZE)
+
+#define MEMORY_RW_ASSERT(addr) assert(ILLEGAL_MEMORY_ADDRESS(addr))
+#define REGISTER_RW_ASSERT(reg) assert(ILLEGAL_REGISTER_ACCESS(reg))
 #endif
+
+
+/*****************************************/
+/*********** Implementations *************/
+/*****************************************/
+
+uint16_t rread(enum REGISTER reg)
+{
+#ifdef RT_CHECKS
+    REGISTER_RW_ASSERT(reg);
+#endif
+    return registers[reg];
+}
+
+void rwrite(enum REGISTER reg, uint16_t val)
+{
+#ifdef RT_CHECKS
+    REGISTER_RW_ASSERT(reg);
+#endif
+    registers[reg] = val;
+}
 
 uint16_t mread(uint16_t address)
 {
-#ifdef DEBUG
-    MEM_RW_ASSERT(address)
+#ifdef RT_CHECKS
+    MEMORY_RW_ASSERT(address);
 #endif
 
     return memory[address];
@@ -20,8 +49,8 @@ uint16_t mread(uint16_t address)
 
 void mwrite(uint16_t address, uint16_t val)
 {
-#ifdef DEBUG
-    MEM_RW_ASSERT(address)
+#ifdef RT_CHECKS
+    MEMORY_RW_ASSERT(address);
 #endif
 
     memory[address] = val;

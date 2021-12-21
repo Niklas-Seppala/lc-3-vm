@@ -18,7 +18,6 @@ OBJS := $(SRC:%.c=%.o)
 BINS := $(SRC:%.c=%)
 
 build: ${BINS}
-	@echo "Linking ..."
 	@${CC} ${OBJS} -o ${OUT_DIR}${PROJECT_NAME}
 	@mv ./*.o ${OBJ_DIR}
 	@echo "$(COMPLETE_PRINT)"
@@ -27,7 +26,7 @@ build: ${BINS}
 	@${CC} -c ${STD} ${WARN} ${HEADERS} ${DEBUG} $< -o $@
 
 %: %.o
-	@echo "Module $(MODULE_PRINT)"
+	@echo "$(MODULE_PRINT)"
 
 run:
 	@./out/${PROJECT_NAME}
@@ -37,9 +36,8 @@ TEST_DIR=./test/
 TEST_SRC_FILES=$(subst ${SRC_DIR}main.c, ${TEST_DIR}tests.c, ${SRC_FILES})
 
 tests ${TEST_BINS}:
-	@${CC} ${STD} ${WARN} ${HEADERS} ${TEST_SRC_FILES} -o ${OUT_DIR}tests
+	@${CC} ${STD} ${HEADERS} ${TEST_SRC_FILES} -o ${OUT_DIR}tests
 	@./out/tests
-
 #--------------------------------------------------#
 
 
