@@ -1,9 +1,8 @@
 #include "flags.h"
 #include "memory.h"
 
-static inline negative_16(uint16_t value) { return value >> 15; }
-static inline positive_16(uint16_t value) { return !(value >> 15); }
-
+static inline uint16_t negative_16(uint16_t value) { return value >> 15; }
+static inline uint16_t positive_16(uint16_t value) { return !(value >> 15); }
 
 /*****************************************/
 /****** Public API Implementations  ******/
@@ -11,7 +10,7 @@ static inline positive_16(uint16_t value) { return !(value >> 15); }
 
 void set_cond_flag(enum REGISTER reg)
 {
-    const value = rread(reg);
+    const uint16_t value = rread(reg);
 
     if (value == 0)
         rwrite(R_CND, F_ZERO);

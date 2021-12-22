@@ -4,6 +4,8 @@
 #include <stdio.h>
 
 
+static void run();
+
 int main(int argc, char const **argv)
 {
 #ifdef DEBUG
@@ -13,8 +15,12 @@ int main(int argc, char const **argv)
 #endif
     printf("\n");
 #endif
+    run();
+    return 0;
+}
 
-    mread(0x2);
-    printf("HELLO WORLD\n");
-    return 0;   
+static void run()
+{
+    const uint16_t instruction = (0 | OP_ADD) ;
+    exec_instr(instruction);
 }

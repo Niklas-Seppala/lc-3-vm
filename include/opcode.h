@@ -6,9 +6,29 @@
  */
 
 
-
 #if !defined(OPCODE_H)
 #define OPCODE_H
+#include <inttypes.h>
+
+enum OPCODE 
+{
+    OP_BR = 0x0,
+    OP_ADD,  
+    OP_LD,
+    OP_ST, 
+    OP_JSR,
+    OP_AND,
+    OP_LDR,
+    OP_STR,
+    OP_RTI, 
+    OP_NOT,
+    OP_LDI,
+    OP_STI,
+    OP_JMP,
+    OP_RES,
+    OP_LEA,
+    OP_TRAP
+};
 
 /**
  * @brief 16 bit unsigned integer.
@@ -17,7 +37,7 @@
  *    |___| |__| |__|  |____|
  *    OP    P1   P2    P3
  */
-typedef uint16_t opcode_t;
+typedef uint16_t instr_t;
 
 
 /**
@@ -25,7 +45,7 @@ typedef uint16_t opcode_t;
  * 
  * @param instruction 16-bit instruction.
  */
-void exec_instr(uint16_t instruction);
+void exec_instr(instr_t instruction);
 
 
 #endif // OPCODE_H
