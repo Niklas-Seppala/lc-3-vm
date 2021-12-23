@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "intelliSenseMode": "linux-gcc-x64",
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "gnu99",
+            "includePath": [
+                "/usr/include/**",
+                "include"
+            ],
+            "defines": [
+                "DEBUG", "RT_ASSERT=1"
+            ]
+        }
+    ],
+    "version": 4
+}
