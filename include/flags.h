@@ -6,7 +6,6 @@
  */
 
 
-
 #if !defined(FLAGS_H)
 #define FLAGS_H
 #include "memory.h"

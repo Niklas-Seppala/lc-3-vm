@@ -6,14 +6,17 @@
 
 #define MAX_OP_N 16 // 2^4
 
-// Get the opcode from 16-bit instruction (last 4).
-#define OPCODE(instruction) ((uint16_t)((instruction) >> 12))
+#ifdef RT_ASSERT
+#include <assert.h>
+#define UNDEFINED_OPCODE(opcode) ((opcode >= 0) && (opcode < MAX_OP_N))
+#define VALID_OPCODE_ASSERT(opcode) assert(UNDEFINED_OPCODE(opcode))
+#endif
+
 #define SIGN_EXTEND_IMM5(instr) (sext_16(mask_immediate(instr), 5))
 #define INSTR_VAR_BIT_ACTIVE(instr) ((bool)(instr & 0x20))
 
-
 /*****************************************/
-/******* Private API Declarations  *******/
+/******* Private API Declarations ********/
 /*****************************************/
 
 /**
@@ -67,10 +70,15 @@ static void (*OP_STORE[MAX_OP_N])(uint16_t instruction);
 /****** Public API Implementations  ******/
 /*****************************************/
 
-void exec_instr(uint16_t instruction)
+void exec_instr(uint16_t instr)
 {
-    void (*operation)(uint16_t instruction) = OP_STORE[OPCODE(instruction)];
-    operation(instruction);
+    // Opcode from 16-bit instruction (4 msb).
+    const uint16_t opcode = instr >> OPC_POS;
+#ifdef RT_ASSERT
+    VALID_OPCODE_ASSERT(opcode);
+#endif
+    // Find corresponding op function and exec.
+    OP_STORE[opcode](instr);
 }
 
 
@@ -87,19 +95,36 @@ static inline uint16_t sext_16(uint16_t value, const uint16_t sbit)
     return value;
 }
 
-static inline uint16_t mask_immediate(uint16_t instr) { return instr & 0x1F; }
-static inline uint16_t mask_src_r1(uint16_t instr) { return instr & 0x1C0; }
-static inline uint16_t mask_src_r2(uint16_t instr) { return instr & 0x7; }
-static inline uint16_t mask_dest_r(uint16_t instr) { return instr & 0xE00; }
+static inline uint16_t mask_immediate(uint16_t instr) 
+{ 
+    return instr & 0x1F; 
+}
+
+static inline uint16_t mask_src_r1(uint16_t instr) 
+{ 
+    return (instr >> SRC_REG1_POS) & 0x7; 
+}
+
+static inline uint16_t mask_src_r2(uint16_t instr) 
+{ 
+    return (instr >> SRC_REG2_POS) & 0x7; 
+}
+
+static inline uint16_t mask_dest_r(uint16_t instr) 
+{ 
+    return (instr >> DEST_REG_POS) & 0x7; 
+}
 
 static void ADD(uint16_t instr) 
 {
     const uint16_t dest = mask_dest_r(instr);
-    const uint16_t param1 = rread(mask_src_r1(instr));
-    const bool immediate = INSTR_VAR_BIT_ACTIVE(instr);
-    uint16_t param2 = immediate ? SIGN_EXTEND_IMM5(instr) : rread(mask_src_r2(instr));
+    const uint16_t param_1 = rread(mask_src_r1(instr));
+    uint16_t param_2 = INSTR_VAR_BIT_ACTIVE(instr) 
+        ? SIGN_EXTEND_IMM5(instr) 
+        : rread(mask_src_r2(instr));
 
-    rwrite(dest, param1 + param2);
+    const uint16_t result = param_1 + param_2;
+    rwrite(dest, result);
 }
 
 static void AND(uint16_t instruction) {return;}

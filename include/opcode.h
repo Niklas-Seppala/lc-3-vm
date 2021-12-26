@@ -10,6 +10,11 @@
 #define OPCODE_H
 #include <inttypes.h>
 
+#define OPC_POS 12
+#define DEST_REG_POS 9
+#define SRC_REG1_POS 6
+#define SRC_REG2_POS 0
+
 enum OPCODE 
 {
     OP_BR = 0x0,
