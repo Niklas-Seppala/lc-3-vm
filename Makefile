@@ -1,5 +1,6 @@
 CC=gcc
 DEBUG=-g -DDEBUG -DRT_ASSERT
+D_OUT=DEBUG_OUTSTREAM=\"debug.log\" 
 WARN=-Wall -Wshadow
 STD=-std=gnu99
 HEADERS=-Iinclude

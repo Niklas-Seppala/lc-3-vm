@@ -1,11 +1,20 @@
 #if !defined(DEBUG_H)
 #define DEBUG_H
 #include <inttypes.h>
+#include <stdio.h>
 #include "memory.h"
 #include "opcode.h"
-#include <stdio.h>
 
-#define DEBUG_SECT_END() fprintf(DEBUG_stream(), "\n")
+// These weird macros are for debugging io.
+// #define DEBUG_COMMENT(label) fprintf(DEBUG_stream(), "\n\033[0;32m// %s\033[0m\n", label)
+#define DEBUG_WRITE_REG(file, line, reg, value) {fprintf(DEBUG_stream(), "%s:%d  \033[0;35mWRITE\033[0m  %-5s:  \033[1;34m0x%X\033[0m\n", \
+                                           file, line, \
+                                           #reg, value); \
+                                           rwrite(reg, value);}
+
+#define DEBUG_READ_REG(file, line, reg) {fprintf(DEBUG_stream(), "%s:%d  \033[0;36mREAD\033[0m   %-5s:  \033[1;34m0x%X\033[0m\n", \
+                                           file, line, \
+                                           #reg, rread(reg)); }
 
 /**
  * @brief Get the debug stream. Defaults to stdout.
@@ -13,6 +22,15 @@
  * @return FILE* Debug stream.
  */
 FILE* DEBUG_stream();
+
+
+void DEBUG_instruction(Instruction instr);
+
+int DEBUG_comment(const char *comment);
+
+char* DEBUG_get_time(char *buffer, size_t n);
+
+void DEBUG_printf(const char *format, ...);
 
 /**
  * @brief Builds mock opcode from specified parameters.
@@ -26,24 +44,5 @@ FILE* DEBUG_stream();
 uint16_t DEBUG_build_opc(uint16_t opcode, uint16_t dest_reg,
                    uint16_t src1_reg, uint16_t src2_reg);
 
-/**
- * @brief 
- * 
- * @param file 
- * @param line 
- * @param reg 
- * @return uint16_t 
- */
-uint16_t DEBUG_read_register(char *file, int line, const enum REGISTER reg);
-
-/**
- * @brief 
- * 
- * @param file 
- * @param line 
- * @param reg 
- * @return uint16_t 
- */
-void DEBUG_write_register(char *file, int line, const enum REGISTER reg, uint16_t value);
 
 #endif // DEBUG_H

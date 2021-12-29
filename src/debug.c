@@ -1,3 +1,5 @@
+#include <stdarg.h>
+#include <time.h>
 #include "debug.h"
 
 #define SET_OPC(op) (op << OPC_POS)
@@ -5,47 +7,56 @@
 #define SET_SRC2_REG(reg) (reg << SRC_REG2_POS)
 #define SET_DEST_REG(reg) (reg << DEST_REG_POS)
 
-#define DEBUG_LOAD_REG(file, line, reg, value) fprintf(DEBUG_stream(), "%s:%d  LOAD  %s: %*u\n", \
-                                           file, line, \
-                                           #reg, 8 - (int)((sizeof(#reg)/sizeof(char))), \
-                                           value)
+#define TIME_STR_LEN 256
+char time_str[TIME_STR_LEN];
 
-#define DEBUG_READ_REG(file, line, reg, value) fprintf(DEBUG_stream(), "%s:%d  READ  %s: %*u\n", \
-                                           file, line, \
-                                           #reg, 8 - (int)((sizeof(#reg)/sizeof(char))), \
-                                           value)
-
-static FILE* debug = NULL;
-FILE* DEBUG_stream() 
+char *DEBUG_get_time(char *buffer, size_t n)
 {
-    if (!debug)
+    time_t timestamp;
+    struct tm *details;
+    time(&timestamp);
+    details = localtime(&timestamp);
+    strftime(buffer, 256, "\033[1;33m%d.%m.%Y--%H:%M:%S\033[0m", details);
+    return buffer;
+}
+
+int DEBUG_comment(const char *comment)
+{
+    return fprintf(DEBUG_stream(), "\n\033[0;32m// %s\033[0m\n", comment);
+}
+
+void DEBUG_instruction(Instruction instr)
+{
+    const enum OPCODE opc = instr >> OPC_POS;
+    char opcode[5];
+    opcode_str(opc, opcode, 5);
+    printf("%s\n", opcode);
+}
+
+void DEBUG_printf(const char *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+    vfprintf(DEBUG_stream(), format, args);
+    va_end(args);
+}
+
+static FILE *stream = NULL;
+FILE *DEBUG_stream()
+{
+    if (!stream)
     {
 #ifdef DEBUG_OUTSTREAM
-        debug = fopen(DEBUG_OUTSTREAM);
+        stream = fopen(DEBUG_OUTSTREAM, "a");
 #else
-        debug = stdout;
+        stream = stdout;
 #endif
     }
-    return debug;
+    return stream;
 }
 
 uint16_t DEBUG_build_opc(uint16_t opcode, uint16_t dest_reg,
-                   uint16_t src1_reg, uint16_t src2_reg)
+                         uint16_t src1_reg, uint16_t src2_reg)
 {
-    return SET_OPC(OP_ADD) | SET_SRC1_REG(R_1) | SET_SRC2_REG(R_2) | SET_DEST_REG(R_0);
-}
-
-
-uint16_t DEBUG_read_register(char *file, int line, const enum REGISTER reg)
-{
-    const uint16_t value = rread(reg);
-    DEBUG_READ_REG(file, line, reg, value);
-
-    return value;
-}
-
-void DEBUG_write_register(char *file, int line, const enum REGISTER reg, uint16_t value)
-{
-    DEBUG_LOAD_REG(file, line, reg, value);
-    rwrite(reg, value);
+    return SET_OPC(OPC_ADD) | SET_SRC1_REG(R_1) | SET_SRC2_REG(R_2) | SET_DEST_REG(R_0);
 }

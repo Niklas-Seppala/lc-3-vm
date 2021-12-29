@@ -3,6 +3,8 @@
 #include <stdbool.h>
 #include "opcode.h"
 #include "memory.h"
+#include <string.h>
+#include "debug.h"
 
 #define MAX_OP_N 16 // 2^4
 
@@ -36,7 +38,7 @@ static inline uint16_t sext_16(uint16_t value, const uint16_t sbit);
  * @param instr 16-bit instruction.
  * @return uint16_t IMM5 portion of the specified instruction.
  */
-static inline uint16_t mask_immediate(uint16_t instr);
+static inline uint16_t mask_immediate(Instruction instr);
 
 /**
  * @brief Mask source r1 from instruction. 
@@ -44,7 +46,7 @@ static inline uint16_t mask_immediate(uint16_t instr);
  * @param instr 16-bit instruction.
  * @return uint16_t source r1.
  */
-static inline uint16_t mask_src_r1(uint16_t instr);
+static inline uint16_t mask_src_r1(Instruction instr);
 
 /**
  * @brief Mask source r2 from instruction.
@@ -52,7 +54,7 @@ static inline uint16_t mask_src_r1(uint16_t instr);
  * @param instr 16-bit instruction.
  * @return uint16_t source r2.
  */
-static inline uint16_t mask_src_r2(uint16_t instr);
+static inline uint16_t mask_src_r2(Instruction instr);
 
 /**
  * @brief Masks destination register from instruction.
@@ -60,17 +62,17 @@ static inline uint16_t mask_src_r2(uint16_t instr);
  * @param instr 16-bit instruction.
  * @return uint16_t destination register.
  */
-static inline uint16_t mask_dest_r(uint16_t instr);
+static inline uint16_t mask_dest_r(Instruction instr);
 
 // Array of underlying functions for each opcode.
-static void (*OP_STORE[MAX_OP_N])(uint16_t instruction);
+static void (*OP_STORE[MAX_OP_N])(Instruction instr);
 
 
 /*****************************************/
 /****** Public API Implementations  ******/
 /*****************************************/
 
-void exec_instr(uint16_t instr)
+void exec_instr(Instruction instr)
 {
     // Opcode from 16-bit instruction (4 msb).
     const uint16_t opcode = instr >> OPC_POS;
@@ -100,22 +102,22 @@ static inline uint16_t mask_immediate(uint16_t instr)
     return instr & 0x1F; 
 }
 
-static inline uint16_t mask_src_r1(uint16_t instr) 
+static inline uint16_t mask_src_r1(Instruction instr) 
 { 
     return (instr >> SRC_REG1_POS) & 0x7; 
 }
 
-static inline uint16_t mask_src_r2(uint16_t instr) 
+static inline uint16_t mask_src_r2(Instruction instr) 
 { 
     return (instr >> SRC_REG2_POS) & 0x7; 
 }
 
-static inline uint16_t mask_dest_r(uint16_t instr) 
+static inline uint16_t mask_dest_r(Instruction instr) 
 { 
     return (instr >> DEST_REG_POS) & 0x7; 
 }
 
-static void ADD(uint16_t instr) 
+static void ADD(Instruction instr) 
 {
     const uint16_t dest = mask_dest_r(instr);
     const uint16_t param_1 = rread(mask_src_r1(instr));
@@ -125,26 +127,66 @@ static void ADD(uint16_t instr)
 
     const uint16_t result = param_1 + param_2;
     rwrite(dest, result);
+
+#ifdef DEBUG
+    const int VAR_FLAG = INSTR_VAR_BIT_ACTIVE(instr);
+    DEBUG_printf("\n\033[1;35m%s\033[0m    VAR: \033[1;34m%d\033[0m    ", "ADD", VAR_FLAG);
+    DEBUG_printf("SRC_1: \033[1;34m0x%X\033[0m   ", param_1);     // SRC_1
+    if (VAR_FLAG)
+        DEBUG_printf("IMM5: \033[1;34m0x%X\033[0m    ", param_2);  // IMM5
+    else
+        DEBUG_printf("SRC_2: \033[1;34m0x%X\033[0m    ", param_2); // SRC_2
+
+    DEBUG_printf("\n");
+#endif
 }
 
-static void AND(uint16_t instruction) {return;}
-static void LD(uint16_t instruction) {return;}
-static void BR(uint16_t instruction) {return;}
-static void ST(uint16_t instruction) {return;}
-static void JSR(uint16_t instruction) {return;}
-static void LDR(uint16_t instruction) {return;}
-static void STR(uint16_t instruction) {return;}
-static void RTI(uint16_t instruction) {return;}
-static void NOT(uint16_t instruction) {return;}
-static void LDI(uint16_t instruction) {return;}
-static void STI(uint16_t instruction) {return;}
-static void JMP(uint16_t instruction) {return;}
-static void RES(uint16_t instruction) {return;}
-static void LEA(uint16_t instruction) {return;}
-static void TRAP(uint16_t instruction) {return;}
+
+int opcode_str(enum OPCODE opc, char *buffer, int n)
+{
+    char *str = NULL;
+    switch (opc)
+    {
+    case OPC_BR:   str = "BR  "; break;
+    case OPC_ADD:  str = "ADD "; break;
+    case OPC_LD:   str = "LD  "; break;
+    case OPC_ST:   str = "ST  "; break;
+    case OPC_JSR:  str = "JSR "; break;
+    case OPC_AND:  str = "AND "; break;
+    case OPC_LDR:  str = "LDR "; break;
+    case OPC_STR:  str = "STR "; break;
+    case OPC_RTI:  str = "RTI "; break;
+    case OPC_NOT:  str = "NOT "; break;
+    case OPC_LDI:  str = "LDI "; break;
+    case OPC_STI:  str = "STI "; break;
+    case OPC_JMP:  str = "JMP "; break;
+    case OPC_RES:  str = "RES "; break;
+    case OPC_LEA:  str = "LEA "; break;
+    case OPC_TRAP: str = "TRAP"; break;
+    default: return 0;
+    }
+    strncpy(buffer, str, n);
+    return 1;
+}
+
+static void AND(Instruction instr) {return;}
+static void LD(Instruction instr) {return;}
+static void BR(Instruction instr) {return;}
+static void ST(Instruction instr) {return;}
+static void JSR(Instruction instr) {return;}
+static void LDR(Instruction instr) {return;}
+static void STR(Instruction instr) {return;}
+static void RTI(Instruction instr) {return;}
+static void NOT(Instruction instr) {return;}
+static void LDI(Instruction instr) {return;}
+static void STI(Instruction instr) {return;}
+static void JMP(Instruction instr) {return;}
+static void RES(Instruction instr) {return;}
+static void LEA(Instruction instr) {return;}
+static void TRAP(Instruction instr) {return;}
 
 // Array of underlying functions for each opcode.
-static void (*OP_STORE[MAX_OP_N])(uint16_t instruction) = 
+static void (*OP_STORE[MAX_OP_N])(Instruction instr) = 
 {//      bin code | immediate |  description
  //-------------------------------------------------------
     BR,   // 0x0                Conditional branch

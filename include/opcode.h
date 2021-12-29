@@ -17,23 +17,26 @@
 
 enum OPCODE 
 {
-    OP_BR = 0x0,
-    OP_ADD,  
-    OP_LD,
-    OP_ST, 
-    OP_JSR,
-    OP_AND,
-    OP_LDR,
-    OP_STR,
-    OP_RTI, 
-    OP_NOT,
-    OP_LDI,
-    OP_STI,
-    OP_JMP,
-    OP_RES,
-    OP_LEA,
-    OP_TRAP
+    OPC_BR = 0x0,
+    OPC_ADD,  
+    OPC_LD,
+    OPC_ST, 
+    OPC_JSR,
+    OPC_AND,
+    OPC_LDR,
+    OPC_STR,
+    OPC_RTI, 
+    OPC_NOT,
+    OPC_LDI,
+    OPC_STI,
+    OPC_JMP,
+    OPC_RES,
+    OPC_LEA,
+    OPC_TRAP
 };
+
+int opcode_str(enum OPCODE opc, char *buffer, int n);
+
 
 /**
  * @brief 16 bit unsigned integer.
@@ -42,15 +45,15 @@ enum OPCODE
  *    |___| |__| |__|  |____|
  *    OP    P1   P2    P3
  */
-typedef uint16_t instr_t;
+typedef uint16_t Instruction;
 
 
 /**
  * @brief Executes specified instruction.
  * 
- * @param instruction 16-bit instruction.
+ * @param instr 16-bit instruction.
  */
-void exec_instr(instr_t instruction);
+void exec_instr(Instruction instr);
 
 
 #endif // OPCODE_H
