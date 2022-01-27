@@ -63,3 +63,10 @@ int read_img(const char *path, uint16_t *memory)
     fclose(file);
     return 1;
 }
+
+void parse_args(const char **argv, const int argc, struct args *args)
+{
+    if (argc > 1) {
+        args->filepath = argv[1];
+    }
+}

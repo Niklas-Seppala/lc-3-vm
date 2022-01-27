@@ -30,7 +30,7 @@ build: ${BINS}
 	@echo "$(MODULE_PRINT)"
 
 run:
-	@./out/${PROJECT_NAME}
+	@./out/${PROJECT_NAME} hello.obj
 
 clean:
 	@rm $(OBJ_DIR)* $(OUT_DIR)* *.o 2>/dev/null || true

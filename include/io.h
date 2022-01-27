@@ -14,19 +14,17 @@
 #define CYN  "\x1B[36m"
 #define WHT  "\x1B[37m"
 
+struct args
+{
+    const char *filepath;
+};
 
 #define CLEAR() printf("\033[H\033[J")
 #define GOTO_XY(x,y) printf("\033[%d;%dH", (y), (x))
-
-/*
-╔══════════════╗\n"
-║              ║\n"
-╚══════════════╝\n"
-*/
 
 void init_io(void);
 void clean_io(void);
 
 int read_img(const char *path, uint16_t *memory);
-
+void parse_args(const char **argv, const int argc, struct args *args);
 #endif // IO_H

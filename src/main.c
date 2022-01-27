@@ -25,10 +25,14 @@ static void run_vm(void)
 
 int main(int argc, char const **argv)
 {
+    struct args args;
+    parse_args(argv, argc, &args);
+    printf("%s\n", args.filepath);
+
     init_io();
-    if (!read_img("2048.obj", mem_ptr(NO_OFFSET)))
+    if (!read_img(args.filepath, mem_ptr(NO_OFFSET)))
     {
-        printf("Can not open file.");
+        printf("Can not open file.\n");
         exit(EXIT_FAILURE);
     }
     run_vm();
