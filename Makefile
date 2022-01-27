@@ -34,3 +34,6 @@ run:
 
 clean:
 	@rm $(OBJ_DIR)* $(OUT_DIR)* *.o 2>/dev/null || true
+
+compiler:
+	gcc compiler/main.c -o ./out/compiler

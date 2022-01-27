@@ -1,19 +1,6 @@
-/**
- * @file memory.h
- * @author Niklas Seppälä
- * @date 2021-12-21
- * @copyright Copyright (c) 2021
- */
-
-
-#if !defined(OPCODE_H)
-#define OPCODE_H
+#if !defined(OPC_H)
+#define OPC_H
 #include <inttypes.h>
-
-#define OPC_POS 12
-#define DEST_REG_POS 9
-#define SRC_REG1_POS 6
-#define SRC_REG2_POS 0
 
 enum OPCODE 
 {
@@ -35,8 +22,12 @@ enum OPCODE
     OPC_TRAP
 };
 
-int opcode_str(enum OPCODE opc, char *buffer, int n);
-
+enum COND_FLAGS
+{
+    F_POS  = 0x1,  // Positive flag
+    F_ZERO = 0x2,  // Zero flag
+    F_NEG  = 0x4   // Negative flag
+};
 
 /**
  * @brief 16 bit unsigned integer.
@@ -47,7 +38,6 @@ int opcode_str(enum OPCODE opc, char *buffer, int n);
  */
 typedef uint16_t Instruction;
 
-
 /**
  * @brief Executes specified instruction.
  * 
@@ -55,5 +45,4 @@ typedef uint16_t Instruction;
  */
 void exec_instr(Instruction instr);
 
-
-#endif // OPCODE_H
+#endif // OPC_H
