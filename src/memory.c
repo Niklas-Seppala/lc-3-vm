@@ -4,9 +4,9 @@
 #include <termios.h>
 #include <unistd.h>
 
-static uint16_t PC_START = 0x3000;         // Addresses < 0x3000 reserved for later use.
-static uint16_t memory[UINT16_MAX] = {0};  // Program Memory. 
-static uint16_t registers[R_SIZE] = {0};   // Program Register.
+static uint16_t PC_START = 0x3000;        // Addresses < 0x3000 reserved for later use.
+static uint16_t memory[UINT16_MAX] = {0}; // Program Memory.
+static uint16_t registers[R_SIZE] = {0};  // Program Register.
 
 /*****************************************/
 /***** Runtime R/W safety assertions *****/
@@ -18,20 +18,20 @@ static uint16_t registers[R_SIZE] = {0};   // Program Register.
 #define ILLEGAL_MEMORY_ACCESS 0
 #define ILLEGAL_REG_ACCESS 0
 
-static void mem_rw_assert(uint16_t addr) 
+static void mem_rw_assert(uint16_t addr)
 {
     int valid = (addr >= PC_START && addr < UINT16_MAX);
-    if (!valid) 
+    if (!valid)
     {
         fprintf(stderr, "invalid memory address: 0x%x\n", addr);
         assert(ILLEGAL_MEMORY_ACCESS);
     }
 }
 
-static void reg_rw_assert(uint16_t reg) 
+static void reg_rw_assert(uint16_t reg)
 {
     int valid = (reg >= R_0 && reg < R_SIZE);
-    if (!valid) 
+    if (!valid)
     {
         fprintf(stderr, "invalid register: 0x%x\n", reg);
         assert(ILLEGAL_REG_ACCESS);
@@ -43,7 +43,7 @@ static void reg_rw_assert(uint16_t reg)
 /****** Public API Implementations  ******/
 /*****************************************/
 
-uint16_t reg_read(enum REGISTER reg)
+uint16_t rread(enum REGISTER reg)
 {
 #ifdef RT_ASSERT
     reg_rw_assert(reg);
@@ -51,7 +51,7 @@ uint16_t reg_read(enum REGISTER reg)
     return registers[reg];
 }
 
-void reg_write(enum REGISTER reg, uint16_t val)
+void rwrite(enum REGISTER reg, uint16_t val)
 {
 #ifdef RT_ASSERT
     reg_rw_assert(reg);
@@ -59,7 +59,13 @@ void reg_write(enum REGISTER reg, uint16_t val)
     registers[reg] = val;
 }
 
-static uint16_t check_key() {
+inline void incr_rc(uint16_t offset)
+{
+    rwrite(R_PC, rread(R_PC) + offset);
+}
+
+static uint16_t check_key()
+{
     fd_set readfds;
     FD_ZERO(&readfds);
     FD_SET(STDIN_FILENO, &readfds);
@@ -71,21 +77,25 @@ static uint16_t check_key() {
 }
 
 #include <stdio.h>
-uint16_t mem_read(uint16_t address)
+uint16_t mread(uint16_t address)
 {
 #ifdef RT_ASSERT
     mem_rw_assert(address);
 #endif
 
-    if (address == MR_KBSR) {
-    if (check_key()) { // defined in utils.c
-      memory[MR_KBSR] = (1 << 15);
-      memory[MR_KBDR] = getchar();
-    } else {
-      memory[MR_KBSR] = 0;
+    if (address == MR_KBSR)
+    {
+        if (check_key())
+        {
+            memory[MR_KBSR] = (1 << 15);
+            memory[MR_KBDR] = getchar();
+        }
+        else
+        {
+            memory[MR_KBSR] = 0;
+        }
     }
-  }
-  return memory[address];
+    return memory[address];
 }
 
 void mem_write(uint16_t address, uint16_t val)
@@ -99,5 +109,5 @@ void mem_write(uint16_t address, uint16_t val)
 
 uint16_t *mem_ptr(uint16_t offset)
 {
-    return (uint16_t*) (memory + offset);
+    return (memory + offset);
 }

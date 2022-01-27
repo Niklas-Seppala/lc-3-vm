@@ -2,22 +2,23 @@
 #include "opcodes/utils.h"
 #include "memory.h"
 #include "trap.h"
+#include "io.h"
 
 #define MAX_OP_N 16
 
 static void set_flags(enum REGISTER reg)
 {
-    const uint16_t value = reg_read(reg);
+    const uint16_t value = rread(reg);
 
     if (value == 0)
-        reg_write(R_CND, F_ZERO);
+        rwrite(R_CND, F_ZERO);
 
     else if (negative_16(value)) {
-        reg_write(R_CND, F_NEG);
+        rwrite(R_CND, F_NEG);
     }
 
     else
-        reg_write(R_CND, F_POS);
+        rwrite(R_CND, F_POS);
 }
 
 /*****************************************/
@@ -30,13 +31,13 @@ static void ADD(Instruction instr)
 {
     const bool VAR = var_set(instr, 5);
     uint16_t dest = mask_dest_r(instr);
-    uint16_t param_1 = reg_read(mask_src_r1(instr));
+    uint16_t param_1 = rread(mask_src_r1(instr));
     uint16_t param_2 = VAR 
         ? SIGN_EXTEND_IMM5(instr) 
-        : reg_read(mask_src_r2(instr));
+        : rread(mask_src_r2(instr));
 
     uint16_t result = param_1 + param_2;
-    reg_write(dest, result);
+    rwrite(dest, result);
     set_flags(dest);
 }
 
@@ -45,22 +46,22 @@ static void AND(Instruction instr)
     const bool VAR = var_set(instr, 5);
 
     uint16_t dest = mask_dest_r(instr);
-    uint16_t param_1 = reg_read(mask_src_r1(instr));
+    uint16_t param_1 = rread(mask_src_r1(instr));
     uint16_t param_2 = VAR 
         ? SIGN_EXTEND_IMM5(instr) 
-        : reg_read(mask_src_r2(instr));
+        : rread(mask_src_r2(instr));
     uint16_t result = param_1 & param_2;
-    reg_write(dest, result);
+    rwrite(dest, result);
     set_flags(dest);
 }
 
 static void LD(Instruction instr)
 {
     uint16_t dest = mask_dest_r(instr);
-    uint16_t PC = reg_read(R_PC);
+    uint16_t PC = rread(R_PC);
     uint16_t offset = SIGN_EXTEND_OFF9(instr);
-    uint16_t mem_value = mem_read(PC + offset);
-    reg_write(dest, mem_value);
+    uint16_t mem_value = mread(PC + offset);
+    rwrite(dest, mem_value);
     set_flags(dest);
 }
 
@@ -68,8 +69,8 @@ static void LDI(Instruction instr)
 {
     uint16_t dest = mask_dest_r(instr);
     uint16_t pc_offset = SIGN_EXTEND_OFF9(instr);
-    uint16_t mem_value = mem_read(mem_read(reg_read(R_PC) + pc_offset));
-    reg_write(dest, mem_value);
+    uint16_t mem_value = mread(mread(rread(R_PC) + pc_offset));
+    rwrite(dest, mem_value);
     set_flags(dest);
 }
 
@@ -78,8 +79,8 @@ static void LDR(Instruction instr)
     uint16_t dest = mask_dest_r(instr);
     uint16_t src_1 = mask_src_r1(instr);
     uint16_t offset = SIGN_EXTEND_OFF6(instr);
-    uint16_t val = reg_read(src_1) + offset;
-    reg_write(dest, mem_read(val));
+    uint16_t val = rread(src_1) + offset;
+    rwrite(dest, mread(val));
     set_flags(dest);
 }
 
@@ -87,17 +88,17 @@ static void LEA(Instruction instr)
 {
     uint16_t dest = mask_dest_r(instr);
     uint16_t offset = SIGN_EXTEND_OFF9(instr);
-    uint16_t value = reg_read(R_PC) + offset;
-    reg_write(dest, value);
+    uint16_t value = rread(R_PC) + offset;
+    rwrite(dest, value);
     set_flags(dest);
 }
 
 static void BR(Instruction instr) 
 {
-    if (reg_read(R_CND) & mask_conds(instr))
+    if (rread(R_CND) & mask_conds(instr))
     {
         uint16_t offset = SIGN_EXTEND_OFF9(instr);
-        reg_write(R_PC, reg_read(R_PC) + offset);
+        rwrite(R_PC, rread(R_PC) + offset);
     }
 }
 
@@ -105,30 +106,30 @@ static void ST(Instruction instr)
 {
     uint16_t dest = mask_dest_r(instr);
     uint16_t offset = SIGN_EXTEND_OFF9(instr);
-    mem_write(reg_read(R_PC) + offset, reg_read(dest));
+    mem_write(rread(R_PC) + offset, rread(dest));
 }
 
 static void JSR(Instruction instr) 
 {
-    reg_write(R_7, reg_read(R_PC));
+    rwrite(R_7, rread(R_PC));
 
     if (var_set(instr, 11))
     {
         uint16_t long_offset = SIGN_EXTEND_OFF11(instr);
-        reg_write(R_PC, reg_read(R_PC) + long_offset);
+        rwrite(R_PC, rread(R_PC) + long_offset);
     }
     else
     {
-        uint16_t baser = reg_read(mask_src_r1(instr));
-        reg_write(R_PC, baser);
+        uint16_t baser = rread(mask_src_r1(instr));
+        rwrite(R_PC, baser);
     }
 }
 
 static void STR(Instruction instr)
 {
-    uint16_t value = reg_read(mask_dest_r(instr));
+    uint16_t value = rread(mask_dest_r(instr));
     uint16_t offset = SIGN_EXTEND_OFF6(instr);
-    uint16_t baser = reg_read(mask_src_r1(instr));
+    uint16_t baser = rread(mask_src_r1(instr));
 
     mem_write(baser + offset, value);
 }
@@ -136,8 +137,8 @@ static void STR(Instruction instr)
 static void NOT(Instruction instr)
 {
     uint16_t dest = mask_dest_r(instr);
-    uint16_t param_1 = reg_read(mask_src_r1(instr));
-    reg_write(dest, ~param_1);
+    uint16_t param_1 = rread(mask_src_r1(instr));
+    rwrite(dest, ~param_1);
     set_flags(dest);
 }
 
@@ -145,13 +146,13 @@ static void STI(Instruction instr)
 {
     uint16_t dest = mask_dest_r(instr);
     uint16_t offset = SIGN_EXTEND_OFF9(instr);
-    mem_write(mem_read(reg_read(R_PC) + offset), reg_read(dest));
+    mem_write(mread(rread(R_PC) + offset), rread(dest));
 }
 
 static void JMP(Instruction instr)
 {
     uint16_t baser = mask_src_r1(instr);
-    reg_write(R_PC, reg_read(baser));
+    rwrite(R_PC, rread(baser));
 }
 
 static void TRAP(Instruction instr) 
@@ -192,17 +193,14 @@ static void (*OP_STORE[MAX_OP_N])(Instruction instr) =
 #define VALID_OPCODE_ASSERT(opcode) assert(UNDEFINED_OPCODE(opcode))
 #endif
 
-void exec_instr(Instruction instr)
+void exec(Instruction instr)
 {
     // Opcode from 16-bit instruction (4 msb).
     const uint16_t opcode = instr >> OPC_POS;
 #ifdef RT_ASSERT
     VALID_OPCODE_ASSERT(opcode);
 #endif
-    static char OPC_BUFFER[5];
-    opcode_str(opcode, OPC_BUFFER, 5); 
-    // printf("OP: %s\n", OPC_BUFFER);
+
     // Find corresponding op function and exec.
     OP_STORE[opcode](instr);
-
 }

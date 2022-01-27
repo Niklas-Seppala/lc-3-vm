@@ -43,6 +43,6 @@ typedef uint16_t Instruction;
  * 
  * @param instr 16-bit instruction.
  */
-void exec_instr(Instruction instr);
+void exec(Instruction instr);
 
 #endif // OPC_H

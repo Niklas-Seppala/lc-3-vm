@@ -33,8 +33,9 @@ enum MEMMAP {
  * @param address Operation's target memory address.
  * @return uint16_t Value stored in specified memory address.
  */
-uint16_t mem_read(uint16_t address);
+uint16_t mread(uint16_t address);
 
+#define NO_OFFSET 0
 /**
  * @brief 
  * 
@@ -51,6 +52,12 @@ uint16_t *mem_ptr(uint16_t offset);
  */
 void mem_write(uint16_t address, uint16_t val);
 
+/**
+ * @brief Increments program counter by specified offset.
+ * 
+ * @param offset program counter offset.
+ */
+void incr_rc(uint16_t offset);
 
 /**
  * @brief Reads value from specified register.
@@ -58,7 +65,7 @@ void mem_write(uint16_t address, uint16_t val);
  * @param reg Operation's target register.
  * @return uint16_t Value stored in specified register.
  */
-uint16_t reg_read(enum REGISTER reg);
+uint16_t rread(enum REGISTER reg);
 
 /**
  * @brief Writes specified value to target register.
@@ -66,7 +73,7 @@ uint16_t reg_read(enum REGISTER reg);
  * @param reg Operation's target register.
  * @param val Value to be written in specified register.
  */
-void reg_write(enum REGISTER reg, uint16_t val);
+void rwrite(enum REGISTER reg, uint16_t val);
 
 
 #endif // MEMORY_H

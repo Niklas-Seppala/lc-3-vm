@@ -109,8 +109,6 @@ uint16_t mask_dest_r(Instruction instr);
 
 bool var_set(Instruction instr, int n);
 
-int opcode_str(enum OPCODE opc, char *buffer, int n);
-
 #define SIGN_EXTEND_IMM5(instr) (sext_16(mask_immediate(instr), 5))
 #define SIGN_EXTEND_OFF9(instr) (sext_16(mask_offs9(instr), 9))
 #define SIGN_EXTEND_OFF6(instr) (sext_16(mask_offs6(instr), 6))

@@ -1,3 +1,10 @@
+#if !defined(IO_H)
+#define IO_H
+
+#include <inttypes.h>
+#include <stdio.h>
+#include "opcodes/opc.h"
+
 #define RST  "\x1B[0m"
 #define RED  "\x1B[31m"
 #define GRN  "\x1B[32m"
@@ -7,6 +14,7 @@
 #define CYN  "\x1B[36m"
 #define WHT  "\x1B[37m"
 
+
 #define CLEAR() printf("\033[H\033[J")
 #define GOTO_XY(x,y) printf("\033[%d;%dH", (y), (x))
 
@@ -15,3 +23,10 @@
 ║              ║\n"
 ╚══════════════╝\n"
 */
+
+void init_io(void);
+void clean_io(void);
+
+int read_img(const char *path, uint16_t *memory);
+
+#endif // IO_H

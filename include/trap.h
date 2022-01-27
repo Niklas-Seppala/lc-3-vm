@@ -2,7 +2,7 @@
 #define TRAP_H
 #include <stdio.h>
 #include <inttypes.h>
-#include <stdbool.h>
+// #include <stdbool.h>
 
 #define TRAP_OFFSET 0x20
 
@@ -14,6 +14,6 @@
 void exec_trap(uint16_t trapvect);
 
 
-bool is_running();
+// bool is_running();
 
 #endif // TRAP_H
