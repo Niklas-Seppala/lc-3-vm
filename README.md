@@ -10,9 +10,11 @@ I still have assembler and debugger on my todo list.
 #### Demo (Linux)
 ```bash
 make
-out/lc3vm demos/hello.obj
-
+out/lc3vm demos/2048.obj
 ````
+![image](https://user-images.githubusercontent.com/66251857/151396365-865ba8b7-d417-4ef9-9fa6-6b55d97157ff.png)
+
+
 
 #### Links
 https://www.cs.utexas.edu/users/fussell/courses/cs310h/lectures/Lecture_10-310h.pdf <br>
