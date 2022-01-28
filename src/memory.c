@@ -3,7 +3,6 @@
 #include <unistd.h>
 #include "memory.h"
 
-static uint16_t PC_START = 0x3000;        // Addresses < 0x3000 reserved for later use.
 static uint16_t memory[UINT16_MAX] = {0}; // Program Memory.
 static uint16_t registers[R_SIZE] = {0};  // Program Register.
 
@@ -13,6 +12,8 @@ static uint16_t registers[R_SIZE] = {0};  // Program Register.
 #ifdef RT_ASSERT
 #include <assert.h>
 #include <stdio.h>
+
+static uint16_t PC_START = 0x3000;        // Addresses < 0x3000 reserved for later use.
 
 #define ILLEGAL_MEMORY_ACCESS 0
 #define ILLEGAL_REG_ACCESS 0

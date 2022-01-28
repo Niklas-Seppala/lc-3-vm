@@ -1,10 +1,14 @@
 CC=gcc
-DEBUG=-g -DDEBUG -DRT_ASSERT
+CC_FLAGS=-Wall -Wshadow -std=gnu99 -Iinclude
 D_OUT=DEBUG_OUTSTREAM=\"debug.log\" 
-WARN=-Wall -Wshadow
-STD=-std=gnu99
-HEADERS=-Iinclude
 PROJECT_NAME=lc3vm
+
+ifdef DEBUG
+	CC_FLAGS += -DDEBUG -g
+endif
+ifdef RT_ASSERT
+	CC_FLAGS += -DRT_ASSERT
+endif
 
 COMPLETE_PRINT = \033[1;32mBuild Complete\033[0m\n\nBinary location: ${OUT_DIR}${PROJECT_NAME}\n----------------\n
 MODULE_PRINT = \033[0;34m$@\033[0m
@@ -24,7 +28,7 @@ build: ${BINS}
 	@echo "$(COMPLETE_PRINT)"
 
 %.o: ${SRC_DIR}%.c
-	@${CC} -c ${STD} ${WARN} ${HEADERS} ${DEBUG} $< -o $@
+	@${CC} -c ${CC_FLAGS} $< -o $@
 
 %: %.o
 	@echo "$(MODULE_PRINT)"
