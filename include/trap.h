@@ -2,14 +2,14 @@
 #define TRAP_H
 #include <stdio.h>
 #include <inttypes.h>
-// #include <stdbool.h>
+
 
 #define TRAP_OFFSET 0x20
 
 /**
- * @brief 
+ * @brief Executes trap routine.
  * 
- * @param trapvect 
+ * @param trapvect Trap.
  */
 void exec_trap(uint16_t trapvect);
 

@@ -1,28 +1,35 @@
 #include "opcodes/utils.h"
-#include <stdbool.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include "memory.h"
 
-inline bool negative_16(uint16_t value)
+#define OPC_POS 12
+#define DEST_REG_POS 9
+#define CONDS_POS 9
+#define SRC1_POS 6
+#define SRC2_POS 0
+
+inline int negative_16(uint16_t value)
 { 
     return value >> 15;
 }
 
-inline bool positive_16(uint16_t value)
+inline int positive_16(uint16_t value)
 { 
     return !(value >> 15); 
 }
 
-inline uint16_t sext_16(uint16_t value, const uint16_t sbit)
+inline uint16_t sext(uint16_t value, const uint16_t sbit)
 {
-    const bool sign_bit = value >> (sbit - 1);
+    int sign_bit = value >> (sbit - 1);
     if (sign_bit & 1) {
         value |= (0xFFFF << sbit);
     }
 
     return value;
+}
+
+
+inline enum OPCODE mask_opcode(Instruction instr)
+{
+    return (instr >> OPC_POS);
 }
 
 inline uint16_t mask_trapvect(Instruction instr)
@@ -70,15 +77,7 @@ inline uint16_t mask_dest_r(Instruction instr)
     return (instr >> DEST_REG_POS) & 0x7;
 }
 
-inline bool var_set(Instruction instr, int n)
+inline int var_set(Instruction instr, int n)
 {
     return (instr >> n) & 1;
-}
-
-int opcode_str(enum OPCODE opc, char *buffer, int n)
-{
-    char *str = NULL;
-    
-    strncpy(buffer, str, n);
-    return 1;
 }

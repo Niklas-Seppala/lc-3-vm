@@ -1,10 +1,8 @@
 #include <termios.h>
 #include <signal.h>
 #include <unistd.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include "io.h"
-#include "memory.h"
 
 struct termios orig_terminal;
 

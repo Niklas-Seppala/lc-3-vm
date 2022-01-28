@@ -36,11 +36,12 @@ enum MEMMAP {
 uint16_t mread(uint16_t address);
 
 #define NO_OFFSET 0
+
 /**
- * @brief 
+ * @brief Get pointer to memory + offset.
  * 
- * @param offset 
- * @return uint16_t* 
+ * @param offset Offset to address 0x0.
+ * @return uint16_t* Memory pointer.
  */
 uint16_t *mem_ptr(uint16_t offset);
 

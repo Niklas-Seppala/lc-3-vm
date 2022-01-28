@@ -2,7 +2,6 @@
 #include "opcodes/utils.h"
 #include "memory.h"
 #include "trap.h"
-#include "io.h"
 
 #define MAX_OP_N 16
 
@@ -29,7 +28,7 @@ static void (*OP_STORE[MAX_OP_N])(Instruction instr);
 
 static void ADD(Instruction instr) 
 {
-    const bool VAR = var_set(instr, 5);
+    const int VAR = var_set(instr, 5);
     uint16_t dest = mask_dest_r(instr);
     uint16_t param_1 = rread(mask_src_r1(instr));
     uint16_t param_2 = VAR 
@@ -43,7 +42,7 @@ static void ADD(Instruction instr)
 
 static void AND(Instruction instr)
 {
-    const bool VAR = var_set(instr, 5);
+    const int VAR = var_set(instr, 5);
 
     uint16_t dest = mask_dest_r(instr);
     uint16_t param_1 = rread(mask_src_r1(instr));
@@ -195,12 +194,11 @@ static void (*OP_STORE[MAX_OP_N])(Instruction instr) =
 
 void exec(Instruction instr)
 {
-    // Opcode from 16-bit instruction (4 msb).
-    const uint16_t opcode = instr >> OPC_POS;
+    enum OPCODE opcode = mask_opcode(instr);
+
 #ifdef RT_ASSERT
     VALID_OPCODE_ASSERT(opcode);
 #endif
 
-    // Find corresponding op function and exec.
     OP_STORE[opcode](instr);
 }

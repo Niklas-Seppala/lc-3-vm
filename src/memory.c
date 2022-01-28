@@ -1,8 +1,7 @@
 #include <inttypes.h>
-#include "memory.h"
 #include <sys/select.h>
-#include <termios.h>
 #include <unistd.h>
+#include "memory.h"
 
 static uint16_t PC_START = 0x3000;        // Addresses < 0x3000 reserved for later use.
 static uint16_t memory[UINT16_MAX] = {0}; // Program Memory.

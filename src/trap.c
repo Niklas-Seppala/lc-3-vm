@@ -1,6 +1,7 @@
 #include "trap.h"
 #include "memory.h"
 
+
 int halt = 0;
 
 static inline void t_getc(void)

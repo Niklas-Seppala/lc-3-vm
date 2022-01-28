@@ -4,7 +4,7 @@
 #include "trap.h"
 #include "io.h"
 
-// Address space OF 0x0 -> 0x3000 is reserved.
+// Address space 0x0 -> 0x3000 is reserved.
 static const uint16_t PC_START = 0x3000;
 
 // State of HALT trap.
@@ -27,7 +27,6 @@ int main(int argc, char const **argv)
 {
     struct args args;
     parse_args(argv, argc, &args);
-    printf("%s\n", args.filepath);
 
     init_io();
     if (!read_img(args.filepath, mem_ptr(NO_OFFSET)))
