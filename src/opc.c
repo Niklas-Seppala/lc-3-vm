@@ -20,10 +20,6 @@ static void set_flags(enum REGISTER reg)
         rwrite(R_CND, F_POS);
 }
 
-/*****************************************/
-/******** OPCODE IMPLEMENTATIONS  ********/
-/*****************************************/
-
 static void (*OP_STORE[MAX_OP_N])(Instruction instr);
 
 static void ADD(Instruction instr) 

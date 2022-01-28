@@ -1,8 +1,6 @@
 #if !defined(TRAP_H)
 #define TRAP_H
-#include <stdio.h>
 #include <inttypes.h>
-
 
 #define TRAP_OFFSET 0x20
 

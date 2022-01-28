@@ -1,6 +1,6 @@
+#include <stdio.h>
 #include "trap.h"
 #include "memory.h"
-
 
 int halt = 0;
 

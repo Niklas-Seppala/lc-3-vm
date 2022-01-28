@@ -39,10 +39,6 @@ static void reg_rw_assert(uint16_t reg)
 }
 #endif
 
-/*****************************************/
-/****** Public API Implementations  ******/
-/*****************************************/
-
 uint16_t rread(enum REGISTER reg)
 {
 #ifdef RT_ASSERT
